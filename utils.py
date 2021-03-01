@@ -102,7 +102,8 @@ def del_files(filename_l):
     for filename in filename_l:
         try:
             os.remove(filename)
-        except OSError:
+        except OSError as e:
+            print("Could not remove files: ", filename, e)
             pass
 
 def parmap(f, X, nprocs=multiprocessing.cpu_count()):

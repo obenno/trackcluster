@@ -137,7 +137,8 @@ class bigGenePred(object):
         """
         string_l=string_bed.strip().split("\t")
 
-        self.chrom=string_l[0][3:] # revsere the +chr operation
+        ##self.chrom=string_l[0][3:] # revsere the +chr operation
+        self.chrom=string_l[0] # retain full name of chr
         self.chromStart=int(string_l[1])
         self.chromEnd=int(string_l[2])
         self.name=string_l[3]
@@ -220,6 +221,8 @@ class bigGenePred(object):
         :param gene_start:
         :return:
         """
+        ## This function not support single exon reads
+        ## Modified to adapt
         gene_start=0 if gene_start is None else gene_start
         offset=self.chromStart-gene_start
 
@@ -234,7 +237,9 @@ class bigGenePred(object):
 
         self.intron=self.get_intron(line_exon)
         self.intronlen=self.get_exonlen(self.intron)
-
+        ## If there is no intron, an empty list will be returned
+        ## This may cause incompatibility when converting to dataframe
+        
         # debug:
         #print("exon", self.exon)
 
@@ -272,7 +277,8 @@ class bigGenePred(object):
         line_str = []
         for exon in self.exon:
             start, end = exon
-            str_one = "\t".join([self.chrom, str(start), str(end), self.name])
+            ## Modified to add strand information
+            str_one = "\t".join([self.chrom, str(start), str(end), self.name, ".", self.strand])
             line_str.append(str_one)
 
         bed_str = "\n".join(line_str)
@@ -282,7 +288,8 @@ class bigGenePred(object):
         line_str = []
         for intron in self.intron:
             start, end = intron
-            str_one_intron = "\t".join([self.chrom, str(start), str(end), self.name])
+            ## Modified to add strand information
+            str_one_intron = "\t".join([self.chrom, str(start), str(end), self.name, ".", self.strand])
             line_str.append(str_one_intron)
 
         bed_str = "\n".join(line_str)
